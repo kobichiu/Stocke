@@ -4,8 +4,11 @@ import type {Product, ProductCategory, UsageCondition} from "../../products.ts";
 import {usageOptions, handleClick} from "../../products.ts";
 import { IoMdCheckboxOutline } from "react-icons/io";
 
+interface EditFormProps {
+    setOnBackClick: (callback: () => void) => void;
+}
 
-export default function EditForm() {
+export default function EditForm({setOnBackClick}: EditFormProps) {
     const {id} = useParams();
 
     const navigate = useNavigate();
@@ -24,10 +27,7 @@ export default function EditForm() {
     const [periodAfterOpen, setPeriodAfterOpen] = useState<string>("");
     const [note, setNote] = useState<string>("");
     const [showSuccessful, setShowSuccessful] = useState(false);
-
     const [showCancelBox, setShowCancelBox] = useState(false);
-
-
 
     const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
@@ -84,6 +84,42 @@ export default function EditForm() {
         setBestBefore(prod.bestBefore ?? "");
         setNote(prod.note ?? "");
     }, [id]);
+
+    // useEffect #1.5 - Setup navbar back button handler
+    useEffect(() => {
+        const handleNavbarBackClick = () => {
+            const products: Product[] = JSON.parse(localStorage.getItem("products") || "[]");
+            const prod = products.find((item: Product) => item.id === id);
+
+            if (!prod) {
+                navigate(-1);
+                return;
+            }
+
+            const hasChanged =
+                product          !== (prod.product ?? "")                    ||
+                brand            !== (prod.brand ?? "")                      ||
+                usageCondition   !== prod.usageCondition                     ||
+                productCategory  !== prod.productCategory                    ||
+                volume           !== String(prod.volume ?? "")               ||
+                price            !== String(prod.price ?? "")                ||
+                quantity         !== String(prod.quantity ?? "")             ||
+                dateBought       !== (prod.dateBought ?? "")                 ||
+                dateOpen         !== (prod.dateOpen ?? "")                   ||
+                dateEmpty        !== (prod.dateEmpty ?? "")                  ||
+                bestBefore       !== (prod.bestBefore ?? "")                 ||
+                periodAfterOpen  !== String(prod.periodAfterOpen ?? "")      ||
+                note             !== (prod.note ?? "");
+
+            if (hasChanged) {
+                setShowCancelBox(true);
+            } else {
+                navigate(-1);
+            }
+        };
+
+        setOnBackClick(() => handleNavbarBackClick);
+    }, [product, brand, usageCondition, productCategory, volume, price, quantity, dateBought, dateOpen, dateEmpty, bestBefore, periodAfterOpen, note, id, navigate, setOnBackClick]);
 
     // useEffect #2 - Handle browser back button
     useEffect(() => {
