@@ -1,4 +1,3 @@
-// pages here in /pages act as container that assemble smaller reusable components together
 import Navbar from "../components/layout/Navbar.tsx";
 
 export default function MainPage() {
@@ -7,7 +6,8 @@ export default function MainPage() {
             <body className="bg-[#f3eeff]">
             <Navbar/>
             {/*bg-gradient-to-br from-[#fafafa] via-[#f5f3ff] to-[#e2e8f0]*/}
-            <section className="relative w-full h-screen flex flex-col px-6 py-20 items-center justify-center text-center">
+            <section
+                className="relative w-full h-screen flex flex-col px-6 py-20 items-center justify-center text-center">
                 <span className="mb-6 text-[10px] uppercase tracking-[0.2em] font-bold text-[#6b5a83]">
                     Better Management
                 </span>
@@ -32,7 +32,7 @@ export default function MainPage() {
                 </div>
             </section>
 
-            <footer className="absolute w-full sticky bg-white font-light text-[#26113C]">
+            <footer className="absolute w-full bg-white font-light text-[#26113C]">
                 <div className="mx-auto flex max-w-6xl flex-row items-center justify-between px-4 py-4 md:px-8">
                     Stócke
 

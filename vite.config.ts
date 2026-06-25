@@ -18,14 +18,14 @@ export default defineConfig({
     },
 
     manifest: {
-      name: 'sideProject',
-      short_name: 'sideProject',
+      name: 'Stocke',
+      short_name: 'Stocke',
       description: 'sideProject',
       theme_color: '#ffffff',
     },
 
     injectManifest: {
-      globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+      globPatterns: ['**/*.{js,css,html,svg,png,webp,ico}'],
     },
 
     devOptions: {

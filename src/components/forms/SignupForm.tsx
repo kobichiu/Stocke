@@ -24,7 +24,7 @@ export default function SignupForm() {
     }
 
     return (
-        <div className="py-5 flex flex-col gap-10 px-2 md:py-20">
+        <div className="min-h-screen flex flex-col items-center justify-center p-10 gap-10">
             <h1 className="text-center text-4xl font-bold leading-tight">
                 Create an account
             </h1>

@@ -1,8 +1,7 @@
 import * as React from "react";
 import {useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {LuEye, LuEyeClosed} from "react-icons/lu";
-import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -22,7 +21,7 @@ export default function LoginForm() {
     }
 
     return (
-        <div className="p-10 flex flex-col gap-10 md:py-20">
+        <div className="min-h-screen flex flex-col items-center justify-center p-10 gap-10">
             <h1 className="text-center text-4xl font-bold leading-tight">
                 Welcome Back
             </h1>

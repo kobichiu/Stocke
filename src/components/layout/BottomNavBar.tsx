@@ -8,7 +8,7 @@ export default function BottomNavBar () {
         <div className="max-w-sm mx-auto sticky bottom-3">
             <div className="grid grid-cols-3 gap-3 p-2 sm:m-5 rounded-full
                         bg-white/20 backdrop-blur-xl
-                        border border-black/30
+                        border border-black/20
                         shadow-lg">
 
                 <NavLink
@@ -26,7 +26,7 @@ export default function BottomNavBar () {
                 <NavLink
                     to="/signup"
                     className={({ isActive }) =>
-                        `flex flex-col items-center gap-1 ${
+                        `flex flex-col items-center gap-1 cursor-not-allowed ${
                             isActive ? "text-purple-500" : "text-[#26113C]"
                         }`
                     }
@@ -36,9 +36,9 @@ export default function BottomNavBar () {
                 </NavLink>
 
                 <NavLink
-                    to="/login"
+                    to="/profile"
                     className={({ isActive }) =>
-                        `flex flex-col items-center gap-1 ${
+                        `flex flex-col items-center gap-1 cursor-not-allowed ${
                             isActive ? "text-purple-500" : "text-[#26113C]"
                         }`
                     }
