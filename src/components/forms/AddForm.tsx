@@ -1,10 +1,13 @@
-import {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useEffect, useState} from "react";
 import type {Product, ProductCategory, UsageCondition} from "../../products.ts";
 import {usageOptions} from "../../products.ts";
 
-export default function AddForm() {
-    const navigate = useNavigate();
+interface AddFormProps {
+    onDirtyChange: (isDirty: boolean) => void;
+    onCancel: () => void;
+}
+
+export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
 
     const [product, setProduct] = useState<string>("");
     const [brand, setBrand] = useState<string>("");
@@ -20,11 +23,26 @@ export default function AddForm() {
     const [periodAfterOpen, setPeriodAfterOpen] = useState<string>("");
     const [note, setNote] = useState<string>("");
 
-    const [showCancelBox, setShowCancelBox] = useState<boolean>(false);
-
     const isUsing = usageCondition === "using";
     const isToBeOpened = usageCondition === "to_be_opened";
     const isGaveAway = usageCondition === "gave_away";
+
+    const isDirty = (
+        product!=="" ||
+        brand!=="" ||
+        volume!=="" ||
+        price!=="" ||
+        quantity!=="" ||
+        bestBefore!=="" ||
+        dateOpen!=="" ||
+        dateEmpty!=="" ||
+        periodAfterOpen!=="" ||
+        note!==""
+    );
+
+    useEffect(() => {
+        onDirtyChange(isDirty);
+    }, [isDirty, onDirtyChange]);
 
     /* ---------------- HANDLERS ---------------- */
 
@@ -285,9 +303,7 @@ export default function AddForm() {
                     <div className="flex flex-col-reverse sm:flex-row p-2 md:p-4 gap-3">
                         <button
                             type="button"
-                            onClick={() =>
-                                setShowCancelBox(true)
-                        }
+                            onClick={onCancel}
                             className="w-full sm:w-1/2 rounded-2xl p-3 bg-zinc-100 text-zinc-500 font-medium hover:bg-zinc-200 active:scale-95 transition-all"
                         >
                             Cancel
@@ -301,29 +317,6 @@ export default function AddForm() {
                     </div>
                 </div>
             </form>
-            {showCancelBox && (
-                <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center">
-                    <div className="bg-white w-full sm:w-96 rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4">
-                        <h2 className="text-lg font-bold text-[#1E1A23]">Discard changes?</h2>
-                        <p className="text-sm text-gray-500">Your unsaved changes will be lost.</p>
-
-                        <div className="flex flex-col-reverse sm:flex-row gap-3">
-                            <button
-                                onClick={() => setShowCancelBox(false)}  // ← close modal
-                                className="w-full py-3 rounded-2xl bg-zinc-100 text-zinc-500 font-medium hover:bg-zinc-200 active:scale-95 transition-all"
-                            >
-                                Keep Editing
-                            </button>
-                            <button
-                                onClick={() => navigate(-1)}            // ← confirm and go back
-                                className="w-full py-3 rounded-2xl bg-red-400 text-white font-bold hover:bg-red-500 active:scale-95 transition-all"
-                            >
-                                Discard
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </>
     )
 }

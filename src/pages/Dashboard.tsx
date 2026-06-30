@@ -190,7 +190,11 @@ export default function DashboardPage() {
                     </div>
                 </section>
             </main>
-            <BottomNavBar/>
+            <BottomNavBar onNavigate={function(): void {
+                throw new Error("Function not implemented.");
+            } }/>
         </div>
+
+
     );
 }

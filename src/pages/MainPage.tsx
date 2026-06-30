@@ -3,7 +3,7 @@ import Navbar from "../components/layout/Navbar.tsx";
 export default function MainPage() {
     return (
         <>
-            <body className="bg-[#f3eeff]">
+            <div className="bg-[#f3eeff] min-h-screen">
             <Navbar/>
             {/*bg-gradient-to-br from-[#fafafa] via-[#f5f3ff] to-[#e2e8f0]*/}
             <section
@@ -47,7 +47,7 @@ export default function MainPage() {
                     </div>
                 </div>
             </footer>
-            </body>
+            </div>
         </>
     );
 }

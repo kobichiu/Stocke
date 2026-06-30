@@ -1,18 +1,18 @@
 import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import type {Product, ProductCategory, UsageCondition} from "../../products.ts";
-import {usageOptions, handleClick} from "../../products.ts";
-import { IoMdCheckboxOutline } from "react-icons/io";
+import {usageOptions} from "../../products.ts";
 
 interface EditFormProps {
-    setOnBackClick: (callback: () => void) => void;
+    onDirtyChange: (isDirty: boolean) => void;
+    onCancel: () => void;
 }
 
-export default function EditForm({setOnBackClick}: EditFormProps) {
-    const {id} = useParams();
+export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {    const {id} = useParams();
 
     const navigate = useNavigate();
 
+    // 13 fields for filling in
     const [product, setProduct] = useState<string>("");
     const [brand, setBrand] = useState<string>("");
     const [volume, setVolume] = useState<string>("");
@@ -26,8 +26,30 @@ export default function EditForm({setOnBackClick}: EditFormProps) {
     const [dateEmpty, setDateEmpty] = useState<string>("");
     const [periodAfterOpen, setPeriodAfterOpen] = useState<string>("");
     const [note, setNote] = useState<string>("");
-    const [showSuccessful, setShowSuccessful] = useState(false);
-    const [showCancelBox, setShowCancelBox] = useState(false);
+
+    const [originalProduct, setOriginalProduct] = useState<Product | null>(null);
+
+    const isDirty =
+        originalProduct !== null &&
+        (
+            product !== (originalProduct.product ?? "") ||
+            brand !== (originalProduct.brand ?? "") ||
+            usageCondition !== originalProduct.usageCondition ||
+            productCategory !== originalProduct.productCategory ||
+            volume !== String(originalProduct.volume ?? "") ||
+            price !== String(originalProduct.price ?? "") ||
+            quantity !== String(originalProduct.quantity ?? "") ||
+            dateBought !== (originalProduct.dateBought ?? "") ||
+            dateOpen !== (originalProduct.dateOpen ?? "") ||
+            dateEmpty !== (originalProduct.dateEmpty ?? "") ||
+            bestBefore !== (originalProduct.bestBefore ?? "") ||
+            periodAfterOpen !== String(originalProduct.periodAfterOpen ?? "") ||
+            note !== (originalProduct.note ?? "")
+        );
+
+    useEffect(() => {
+        onDirtyChange(isDirty);
+    }, [isDirty, onDirtyChange]);
 
     const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
@@ -57,16 +79,16 @@ export default function EditForm({setOnBackClick}: EditFormProps) {
 
         localStorage.setItem("products", JSON.stringify(updatedProducts));
 
-        setShowSuccessful(true);
-        handleClick();
-        if (showCancelBox) {setShowCancelBox(false);}
+        navigate("/dashboard");
     };
 
-    // useEffect #1 - Load product data (original)
+    // useEffect (side effect) #1 - Load product data (original)
     useEffect(() => {
         const products = JSON.parse(localStorage.getItem("products") || "[]");
 
         const prod = products.find((item: Product) => item.id === id);
+
+        setOriginalProduct(prod);
 
         if (!prod) return;
 
@@ -84,146 +106,6 @@ export default function EditForm({setOnBackClick}: EditFormProps) {
         setBestBefore(prod.bestBefore ?? "");
         setNote(prod.note ?? "");
     }, [id]);
-
-    // useEffect #1.5 - Setup navbar back button handler
-    useEffect(() => {
-        const handleNavbarBackClick = () => {
-            const products: Product[] = JSON.parse(localStorage.getItem("products") || "[]");
-            const prod = products.find((item: Product) => item.id === id);
-
-            if (!prod) {
-                navigate(-1);
-                return;
-            }
-
-            const hasChanged =
-                product          !== (prod.product ?? "")                    ||
-                brand            !== (prod.brand ?? "")                      ||
-                usageCondition   !== prod.usageCondition                     ||
-                productCategory  !== prod.productCategory                    ||
-                volume           !== String(prod.volume ?? "")               ||
-                price            !== String(prod.price ?? "")                ||
-                quantity         !== String(prod.quantity ?? "")             ||
-                dateBought       !== (prod.dateBought ?? "")                 ||
-                dateOpen         !== (prod.dateOpen ?? "")                   ||
-                dateEmpty        !== (prod.dateEmpty ?? "")                  ||
-                bestBefore       !== (prod.bestBefore ?? "")                 ||
-                periodAfterOpen  !== String(prod.periodAfterOpen ?? "")      ||
-                note             !== (prod.note ?? "");
-
-            if (hasChanged) {
-                setShowCancelBox(true);
-            } else {
-                navigate(-1);
-            }
-        };
-
-        setOnBackClick(() => handleNavbarBackClick);
-    }, [product, brand, usageCondition, productCategory, volume, price, quantity, dateBought, dateOpen, dateEmpty, bestBefore, periodAfterOpen, note, id, navigate, setOnBackClick]);
-
-    // useEffect #2 - Handle browser back button
-    useEffect(() => {
-        // Push a new history state so we can detect back button
-        window.history.pushState(null, "", window.location.href);
-
-        const handlePopState = () => {
-            const products: Product[] = JSON.parse(localStorage.getItem("products") || "[]");
-            const prod = products.find((item: Product) => item.id === id);
-
-            if (!prod) return;
-
-            const hasChanged =
-                product          !== (prod.product ?? "")                    ||
-                brand            !== (prod.brand ?? "")                      ||
-                usageCondition   !== prod.usageCondition                     ||
-                productCategory  !== prod.productCategory                    ||
-                volume           !== String(prod.volume ?? "")               ||
-                price            !== String(prod.price ?? "")                ||
-                quantity         !== String(prod.quantity ?? "")             ||
-                dateBought       !== (prod.dateBought ?? "")                 ||
-                dateOpen         !== (prod.dateOpen ?? "")                   ||
-                dateEmpty        !== (prod.dateEmpty ?? "")                  ||
-                bestBefore       !== (prod.bestBefore ?? "")                 ||
-                periodAfterOpen  !== String(prod.periodAfterOpen ?? "")      ||
-                note             !== (prod.note ?? "");
-
-            if (hasChanged) {
-                // Push state back again to keep user on page
-                window.history.pushState(null, "", window.location.href);
-                setShowCancelBox(true);
-            } else {
-                // No changes, allow navigation
-                navigate(-1);
-            }
-        };
-
-        window.addEventListener("popstate", handlePopState);
-        return () => window.removeEventListener("popstate", handlePopState);
-    }, [product, brand, usageCondition, productCategory, volume, price, quantity, dateBought, dateOpen, dateEmpty, bestBefore, periodAfterOpen, note, id, navigate]);
-
-    // useEffect #3 - Handle tab/window close
-    useEffect(() => {
-        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-            const products: Product[] = JSON.parse(localStorage.getItem("products") || "[]");
-            const prod = products.find((item: Product) => item.id === id);
-
-            if (!prod) return;
-
-            const hasChanged =
-                product          !== (prod.product ?? "")                    ||
-                brand            !== (prod.brand ?? "")                      ||
-                usageCondition   !== prod.usageCondition                     ||
-                productCategory  !== prod.productCategory                    ||
-                volume           !== String(prod.volume ?? "")               ||
-                price            !== String(prod.price ?? "")                ||
-                quantity         !== String(prod.quantity ?? "")             ||
-                dateBought       !== (prod.dateBought ?? "")                 ||
-                dateOpen         !== (prod.dateOpen ?? "")                   ||
-                dateEmpty        !== (prod.dateEmpty ?? "")                  ||
-                bestBefore       !== (prod.bestBefore ?? "")                 ||
-                periodAfterOpen  !== String(prod.periodAfterOpen ?? "")      ||
-                note             !== (prod.note ?? "");
-
-            if (hasChanged) {
-                e.preventDefault();
-                e.returnValue = "";
-            }
-        };
-
-        window.addEventListener("beforeunload", handleBeforeUnload);
-        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-    }, [product, brand, usageCondition, productCategory, volume, price, quantity, dateBought, dateOpen, dateEmpty, bestBefore, periodAfterOpen, note, id]);
-
-    const hasUnsavedChanges = () => {
-        const products: Product[] = JSON.parse(localStorage.getItem("products") || "[]");
-        const prod = products.find((item: Product) => item.id === id);
-
-        if (!prod) {
-            navigate(-1);
-            return;
-        }
-
-        const hasChanged =
-            product          !== (prod.product ?? "")                    ||
-            brand            !== (prod.brand ?? "")                      ||
-            usageCondition   !== prod.usageCondition                     ||
-            productCategory  !== prod.productCategory                    ||
-            volume           !== String(prod.volume ?? "")               ||
-            price            !== String(prod.price ?? "")                ||
-            quantity         !== String(prod.quantity ?? "")             ||
-            dateBought       !== (prod.dateBought ?? "")                 ||
-            dateOpen         !== (prod.dateOpen ?? "")                   ||
-            dateEmpty        !== (prod.dateEmpty ?? "")                  ||
-            bestBefore       !== (prod.bestBefore ?? "")                 ||
-            periodAfterOpen  !== String(prod.periodAfterOpen ?? "")      ||
-            note             !== (prod.note ?? "");
-        if (hasChanged) {
-            setShowCancelBox(true);
-        } else {
-            navigate(-1);
-        }
-    };
-
 
     return (
         <>
@@ -243,12 +125,12 @@ export default function EditForm({setOnBackClick}: EditFormProps) {
                 {/* Form below */}
                 <div className="my-4">
                     {/* Message shows when update is taken place, have to reset to false when users leave the page */}
-                    {showSuccessful && (
-                        <span className=" px-2 md:px-4 flex gap-1 text-lime-500 items-center justify-start">
-                            <IoMdCheckboxOutline />
-                            Successfully updated
-                        </span>
-                    )}
+                    {/*{showSuccessful && (*/}
+                    {/*    <span className=" px-2 md:px-4 flex gap-1 text-lime-500 items-center justify-start">*/}
+                    {/*        <IoMdCheckboxOutline />*/}
+                    {/*        Successfully updated*/}
+                    {/*    </span>*/}
+                    {/*)}*/}
                     {/* Brand & Product Name: each on own line (phone), parallel on bigger screen */}
                     <div className="grid grid-cols-1 md:grid-cols-2 p-2 md:p-4 gap-3 md:gap-5">
                         <div className="flex flex-col">
@@ -432,7 +314,7 @@ export default function EditForm({setOnBackClick}: EditFormProps) {
                     <div className="flex flex-col-reverse sm:flex-row p-2 md:p-4 gap-3">
                         <button
                             type="button"
-                            onClick={hasUnsavedChanges}
+                            onClick={onCancel}
                             className="w-full sm:w-1/2 rounded-2xl p-3 bg-zinc-100 text-zinc-500 font-medium hover:bg-zinc-200 active:scale-95 transition-all"
                         >
                             Cancel
@@ -446,37 +328,6 @@ export default function EditForm({setOnBackClick}: EditFormProps) {
                     </div>
                 </div>
             </form>
-            {/* warning box */}
-            {showCancelBox && (
-                <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center">
-                    <div className="bg-white w-full sm:w-auto rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4">
-                        <h2 className="text-lg font-bold text-[#1E1A23]">Discard changes?</h2>
-                        <p className="text-sm text-gray-500">Your unsaved changes will not be saved.</p>
-
-                        <div className="flex flex-col gap-3">
-                            <button
-                                onClick={() => setShowCancelBox(false)}
-                                className="w-full py-3 rounded-2xl bg-zinc-100 text-zinc-500 font-medium hover:bg-zinc-200 active:scale-95 transition-all"
-                            >
-                                Keep Editing
-                            </button>
-                            <button
-                                onClick={() => navigate(-1)}
-                                className="w-full py-3 rounded-2xl bg-red-400 text-white font-bold hover:bg-red-500 active:scale-95 transition-all"
-                            >
-                                Discard
-                            </button>
-                            <button
-                                className="w-full py-3 rounded-2xl bg-purple-400 text-white font-bold hover:bg-purple-500 active:scale-95 transition-all"
-                                onClick={handleUpdate}
-                            >
-                                Update Changes
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
         </>
     )
 }

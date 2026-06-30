@@ -4,13 +4,11 @@ import BottomNavBar from "../components/layout/BottomNavBar.tsx";
 import type {Product} from "../products.ts";
 import { IoPricetagsOutline } from "react-icons/io5";
 import { LiaShoppingBagSolid } from "react-icons/lia";
-import {AiOutlineDelete} from "react-icons/ai";
-import {MdOutlineModeEdit} from "react-icons/md";
-import {BsBeaker} from "react-icons/bs";
+import { AiOutlineDelete } from "react-icons/ai";
+import { MdOutlineModeEdit } from "react-icons/md";
+import { BsBeaker } from "react-icons/bs";
 import { AiOutlineNumber } from "react-icons/ai";
-
-
-import {usageOptions, usageConditionStyle, productOptions} from "../products.ts";
+import { usageOptions, usageConditionStyle, productOptions } from "../products.ts";
 
 export default function ItemDetailPage() {
     const {id} = useParams();
@@ -128,17 +126,11 @@ export default function ItemDetailPage() {
                                     <AiOutlineDelete size={24}/> Delete
                                 </button>
                             </div>
-
-
-
-
-
-                            {/*<span>Note: {product.note}</span>*/}
                         </div>
                     </div>
                 </div>
             </main>
-            <BottomNavBar/>
+            <BottomNavBar />
         </div>
     );
 }
