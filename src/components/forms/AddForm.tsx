@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import type {Product, ProductCategory, UsageCondition} from "../../products.ts";
 import {usageOptions} from "../../products.ts";
+import {productService} from "../../services/productService.ts";
 
 interface AddFormProps {
     onDirtyChange: (isDirty: boolean) => void;
@@ -66,13 +67,7 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
             note,
         };
 
-        const existing: Product[] = JSON.parse(
-            localStorage.getItem("products") || "[]"
-        );
-
-        existing.push(newProduct);
-
-        localStorage.setItem("products", JSON.stringify(existing));
+        productService.add(newProduct);
 
         handleClear();
     }

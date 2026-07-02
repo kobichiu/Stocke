@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import type {Product, ProductCategory, UsageCondition} from "../../products.ts";
 import {usageOptions} from "../../products.ts";
+import {productService} from "../../services/productService.ts";
 
 interface EditFormProps {
     onDirtyChange: (isDirty: boolean) => void;
@@ -16,8 +17,8 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
     const [product, setProduct] = useState<string>("");
     const [brand, setBrand] = useState<string>("");
     const [volume, setVolume] = useState<string>("");
-    const [usageCondition, setUsageCondition] = useState<UsageCondition>();
-    const [productCategory, setProductCategory] = useState<ProductCategory>();
+    const [usageCondition, setUsageCondition] = useState<UsageCondition>("using");
+    const [productCategory, setProductCategory] = useState<ProductCategory>("body_oil");
     const [dateBought, setDateBought] = useState<string>("");
     const [quantity, setQuantity] = useState<string>("");
     const [price, setPrice] = useState<string>("");
@@ -54,40 +55,41 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
     const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const products = JSON.parse(localStorage.getItem("products") || "[]");
+        if (!id || !originalProduct) return;
 
-        const updatedProducts = products.map((item: Product) =>
-            item.id === id
-                ? {
-                    ...item,
-                    product,
-                    brand,
-                    usageCondition,
-                    productCategory,
-                    volume,
-                    price,
-                    quantity,
-                    dateBought,
-                    dateOpen,
-                    dateEmpty,
-                    bestBefore,
-                    periodAfterOpen: Number(periodAfterOpen),
-                    note,
-                }
-                : item
-        );
+        const updatedProduct: Product = {
+            ...originalProduct,
+            product,
+            brand,
+            usageCondition,
+            productCategory,
+            volume: Number(volume),
+            price: Number(price),
+            quantity: Number(quantity),
+            dateBought,
+            dateOpen,
+            dateEmpty,
+            bestBefore,
+            periodAfterOpen: Number(periodAfterOpen),
+            note,
+        };
 
-        localStorage.setItem("products", JSON.stringify(updatedProducts));
+        productService.update(id, updatedProduct);
 
         navigate("/dashboard");
     };
 
     // useEffect (side effect) #1 - Load product data (original)
     useEffect(() => {
-        const products = JSON.parse(localStorage.getItem("products") || "[]");
 
-        const prod = products.find((item: Product) => item.id === id);
+        if (!id) return;
 
+        const prod = productService.getById(id);
+
+        if (!prod) {
+            setOriginalProduct(null);
+            return;
+        }
         setOriginalProduct(prod);
 
         if (!prod) return;

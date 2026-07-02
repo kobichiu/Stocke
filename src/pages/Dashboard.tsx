@@ -12,15 +12,14 @@ import { BiPlus } from "react-icons/bi";
 import type {Product, UsageCondition, ProductCategory} from "../products.ts";
 import {usageConditionStyle} from "../products.ts";
 import {usageOptions, productOptions} from "../products.ts";
+import {productService} from "../services/productService.ts";
 
 export default function DashboardPage() {
     const [selectedTag, setSelectedTag] = useState<UsageCondition | null>(null);
 
     /* ---------------- DATA ---------------- */
 
-    const products: Product[] = JSON.parse(
-        localStorage.getItem("products") || "[]"
-    );
+    const products: Product[] = productService.getAll();
 
     const filterProducts = selectedTag
         ? products.filter((product) => product.usageCondition === selectedTag)
@@ -190,9 +189,7 @@ export default function DashboardPage() {
                     </div>
                 </section>
             </main>
-            <BottomNavBar onNavigate={function(): void {
-                throw new Error("Function not implemented.");
-            } }/>
+            <BottomNavBar />
         </div>
 
 
