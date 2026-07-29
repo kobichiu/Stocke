@@ -36,10 +36,10 @@ export default function EditPage() {
             <NavbarWithArrow onBackClick={handleBackClick} />
             <main className="pt-20 px-6 md:px-8 py-8 w-full mx-auto max-w-6xl">
                 <h2 className="text-center text-4xl font-extrabold text-[#1E1A23]">
-                    Edit item
+                    Edit Item
                 </h2>
                 <h3 className="text-center text-xl font-light text-[#1E1A23]">
-                    Update your item details
+                    Keep things up to date
                 </h3>
                 <div className="py-10 w-full">
                     <EditForm

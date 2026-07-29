@@ -1,6 +1,6 @@
 import { VitePWA } from 'vite-plugin-pwa';
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
@@ -35,4 +35,7 @@ export default defineConfig({
       type: 'module',
     },
   })],
+  test: {
+    environment: 'jsdom',
+  },
 })

@@ -26,13 +26,13 @@ export default function ItemDetailForm({ onDelete }: ItemDetailFormProps) {
                 Item Details
             </h2>
             <h3 className="text-center text-xl font-light text-[#1E1A23]">
-                (to be available)
+                A closer look at your shelf pick
             </h3>
             <div className="pt-10 w-full">
                 <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
                     <img
-                        src="/src/medicube.jpg"
-                        className="w-full h-80 object-cover"
+                        src={product.image}
+                        className="w-full h-96 object-cover"
                     />
 
                     <div className="p-6 my-2">

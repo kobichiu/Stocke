@@ -17,6 +17,7 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
     const [product, setProduct] = useState<string>("");
     const [brand, setBrand] = useState<string>("");
     const [volume, setVolume] = useState<string>("");
+    const [image, setImage] = useState<string>("");
     const [usageCondition, setUsageCondition] = useState<UsageCondition>("using");
     const [productCategory, setProductCategory] = useState<ProductCategory>("body_oil");
     const [dateBought, setDateBought] = useState<string>("");
@@ -35,6 +36,7 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
         (
             product !== (originalProduct.product ?? "") ||
             brand !== (originalProduct.brand ?? "") ||
+            image !== (originalProduct.image ?? "") ||
             usageCondition !== originalProduct.usageCondition ||
             productCategory !== originalProduct.productCategory ||
             volume !== String(originalProduct.volume ?? "") ||
@@ -72,6 +74,7 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
             bestBefore,
             periodAfterOpen: Number(periodAfterOpen),
             note,
+            image,
         };
 
         productService.update(id, updatedProduct);
@@ -96,6 +99,7 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
 
         setBrand(prod.brand);
         setProduct(prod.product);
+        setImage(prod.image);
         setUsageCondition(prod.usageCondition);
         setProductCategory(prod.productCategory);
         setVolume(String(prod.volume ?? ""));
@@ -109,6 +113,20 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
         setNote(prod.note ?? "");
     }, [id]);
 
+    function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            setImage(reader.result as string);
+        };
+
+        reader.readAsDataURL(file);
+    }
+
     return (
         <>
             <form
@@ -116,11 +134,23 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
                 className="flex flex-col w-full bg-white rounded-2xl overflow-hidden shadow-sm mx-auto transition-all hover:shadow-md"
             >
                 {/* Image at top*/}
-                <div className="relative w-full h-64 overflow-hidden">
-                    <img
-                        src="/src/medicube.jpg"
-                        alt="Product"
-                        className="w-full h-full object-cover"
+                <div
+                    className="relative w-full h-96 overflow-hidden bg-cover bg-center"
+                    style={{ backgroundImage: image ? `url(${image})` : undefined }}
+                >
+                    <label
+                        htmlFor="edit-product-image"
+                        className="absolute bottom-4 right-4 block cursor-pointer rounded-2xl bg-white/30 px-8 py-3 text-center text-md font-medium text-indigo-700 shadow-sm backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:border-white/80 hover:bg-white/50 hover:text-indigo-900 hover:shadow-lg"
+                    >
+                        Edit item image
+                    </label>
+
+                    <input
+                        type="file"
+                        id="edit-product-image"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageChange}
                     />
                 </div>
 

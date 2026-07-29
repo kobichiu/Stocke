@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import NavbarAfterLogIn from "../components/layout/NavbarAfterLogIn.tsx";
 import BottomNavBar from "../components/layout/BottomNavBar.tsx";
 import {useState} from "react";
@@ -15,8 +15,10 @@ import {usageOptions, productOptions} from "../products.ts";
 import {productService} from "../services/productService.ts";
 
 export default function DashboardPage() {
+    const navigate = useNavigate();
     const [selectedTag, setSelectedTag] = useState<UsageCondition | null>(null);
-
+    const [showModal, setShowModal] = useState(false);
+    const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
     /* ---------------- DATA ---------------- */
 
     const products: Product[] = productService.getAll();
@@ -32,6 +34,13 @@ export default function DashboardPage() {
     const uniqueUsedUsageCondition = Array.from(
         new Set(products.map((item) => item.usageCondition))
     ) as UsageCondition[];
+
+    function deleteProduct(id: string) {
+        productService.delete(id);
+        setShowModal(false);
+        setDeleteTargetId(null);
+        navigate("/dashboard");
+    }
 
     /* ---------------- UI ---------------- */
 
@@ -59,7 +68,7 @@ export default function DashboardPage() {
                             className="px-5 py-2 bg-transparent border border-purple-900 text-purple-900 rounded-full font-bold flex items-center gap-2 transition-all hover:border-transparent hover:bg-purple-400 hover:text-white outline-none focus:outline-none"
                         >
                             <FiFilter/>
-                            Filter
+                            <span className="font-bold">Filter</span>
                         </button>
 
                         <Link
@@ -112,7 +121,7 @@ export default function DashboardPage() {
                             <div className="relative">
                                 <img
                                     className="rounded-2xl w-full aspect-square object-cover"
-                                    src="/src/medicube.jpg"
+                                    src={item.image}
                                 />
                                 <span
                                     className={`absolute bottom-3 left-3 px-3 py-1 rounded-full text-sm ${usageConditionStyle[item.usageCondition]}`}>
@@ -160,7 +169,12 @@ export default function DashboardPage() {
                                             <MdOutlineModeEdit size={24}/>
                                         </Link>
                                         <button
+                                            id={item.id}
                                             className="p-2 rounded-lg hover:text-rose-400 hover:bg-rose-100 transition-all duration-300 ease-out cursor-pointer"
+                                            onClick={() => {
+                                                setShowModal(true)
+                                                setDeleteTargetId(item.id)
+                                            }}
                                         >
                                             <AiOutlineDelete size={24}/>
                                         </button>
@@ -190,8 +204,32 @@ export default function DashboardPage() {
                 </section>
             </main>
             <BottomNavBar />
+            {showModal && (
+                <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center">
+                    <div className="bg-white w-full sm:w-auto rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4">
+                        <h2 className="text-lg font-bold text-[#1E1A23]">Delete this product?</h2>
+                        <p className="text-sm text-gray-500">Your change will be not recovered.</p>
+
+                        <div className="flex flex-col gap-3">
+                            <button
+                                className="w-full py-3 rounded-2xl bg-zinc-100 text-zinc-500 font-medium hover:bg-zinc-200 active:scale-95 transition-all"
+                                onClick={() => {setShowModal(false)}}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="w-full py-3 rounded-2xl bg-red-400 text-white font-bold hover:bg-red-500 active:scale-95 transition-all"
+                                onClick={() => {
+                                    if (!deleteTargetId) return;
+                                    deleteProduct(deleteTargetId);
+                                }}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-
-
     );
 }

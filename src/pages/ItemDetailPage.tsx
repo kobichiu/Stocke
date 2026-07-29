@@ -29,8 +29,8 @@ export default function ItemDetailPage() {
             {showModal && (
                 <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center">
                     <div className="bg-white w-full sm:w-auto rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4">
-                        <h2 className="text-lg font-bold text-[#1E1A23]">Discard changes?</h2>
-                        <p className="text-sm text-gray-500">Your unsaved changes will not be saved.</p>
+                        <h2 className="text-lg font-bold text-[#1E1A23]">Delete this product?</h2>
+                        <p className="text-sm text-gray-500">Your change will be not recovered.</p>
 
                         <div className="flex flex-col gap-3">
                             <button

@@ -1,5 +1,7 @@
+// type of "Product" item
 export type Product = {
     id: string;
+    dateAdded: string;
     brand: string;
     product: string;
     volume: number;
@@ -13,6 +15,8 @@ export type Product = {
     dateEmpty: string;
     periodAfterOpen: number;
     note: string;
+    // localStorage can store only string
+    image: string;
 };
 
 export type UsageCondition =
@@ -89,10 +93,10 @@ export const productOptions: Record<ProductCategory, string> = {
     facial_wash: "Facial wash",
     hand_soap: "Hand soap",
     toner: "Toner",
-    hair_shampoo: "Hand shampoo",
+    hair_shampoo: "Hair shampoo",
     hair_conditioner: "Hair conditioner",
-    hair_oil: "Hand oil",
-    hair_treatment: "Hand treatment",
+    hair_oil: "Hair oil",
+    hair_treatment: "Hair treatment",
     handcream: "Hand cream",
     mouth_wash: "Mouth wash",
     sun_screen: "Sunscreen",
@@ -108,11 +112,4 @@ export const usageConditionStyle : Record<UsageCondition, string> = {
     to_be_opened: "bg-yellow-200 text-yellow-700",
     empty: "bg-red-200 text-red-700",
     gave_away: "bg-olive-200 text-olive-700",
-}
-
-export function handleClick() {
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-    });
 }

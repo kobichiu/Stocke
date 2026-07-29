@@ -2,6 +2,8 @@ import {useEffect, useState} from "react";
 import type {Product, ProductCategory, UsageCondition} from "../../products.ts";
 import {usageOptions} from "../../products.ts";
 import {productService} from "../../services/productService.ts";
+import { AiOutlinePicture } from "react-icons/ai";
+
 
 interface AddFormProps {
     onDirtyChange: (isDirty: boolean) => void;
@@ -10,7 +12,9 @@ interface AddFormProps {
 
 export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
 
+    const [imageError, setImageError] = useState<string>("");
     const [product, setProduct] = useState<string>("");
+    const [image, setImage] = useState<string>("");
     const [brand, setBrand] = useState<string>("");
     const [volume, setVolume] = useState<string>("");
     const [usageCondition, setUsageCondition] = useState<UsageCondition>("using");
@@ -38,7 +42,8 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
         dateOpen!=="" ||
         dateEmpty!=="" ||
         periodAfterOpen!=="" ||
-        note!==""
+        note!=="" ||
+        image!==""
     );
 
     useEffect(() => {
@@ -52,6 +57,7 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
 
         const newProduct: Product = {
             id: crypto.randomUUID(),
+            dateAdded: new Date().toISOString(),
             brand,
             product,
             volume: Number(volume),
@@ -65,6 +71,7 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
             dateEmpty,
             periodAfterOpen: Number(periodAfterOpen),
             note,
+            image,
         };
 
         productService.add(newProduct);
@@ -86,8 +93,28 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
         setDateEmpty("");
         setPeriodAfterOpen("");
         setNote("");
+        setImage("");
+        setImageError("");
 
         window.scrollTo({top: 0, behavior: "smooth"});
+    }
+
+    // This is a change event coming from an HTML <input> element.
+    function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+
+        if (!file){
+            setImageError("It is not working. Try again.");
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            setImage(reader.result as string);
+        };
+
+        reader.readAsDataURL(file);
     }
 
     return (
@@ -97,12 +124,31 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
                 className="flex flex-col w-full bg-white rounded-2xl overflow-hidden shadow-sm mx-auto transition-all hover:shadow-md"
             >
                 {/* Image at top*/}
-                <div className="relative w-full h-64 overflow-hidden">
-                    <img
-                        src="/src/medicube.jpg"
-                        alt="Product"
-                        className="w-full h-full object-cover"
+                <div className="relative w-full h-96 overflow-hidden"
+                >
+                    <label
+                        htmlFor="product-image"
+                        style={{ backgroundImage: image ? `url(${image})` : undefined }}
+                        className="h-96 w-full cursor-pointer rounded-2xl rounded-b-none border-2 border-dashed border-purple-300 bg-purple-50 bg-center bg-cover flex flex-col items-center justify-center gap-3 text-indigo-700 hover:bg-purple-100 transition"
+                    >
+                        <div className="flex flex-col items-center justify-center gap-2 rounded-2xl bg-white/30 px-6 py-5 text-center shadow-lg backdrop-blur-xl">
+                            <AiOutlinePicture size={32} />
+                            <span className="font-bold">Upload a picture of the product</span>
+                            <span className="text-sm text-indigo-700">PNG, JPG, or JPEG</span>
+                        </div>
+                    </label>
+                    <input
+                        id="product-image"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
                     />
+                    {imageError && (
+                        <p className="text-sm text-red-500">
+                            {imageError}
+                        </p>
+                    )}
                 </div>
 
                 {/* Form below */}
@@ -307,12 +353,13 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
                             type="submit"
                             className="w-full sm:w-1/2 rounded-2xl p-3 bg-purple-400 text-white font-bold hover:bg-purple-500 active:scale-95 transition-all"
                         >
-                            Submit
+                            Add
                         </button>
                     </div>
                 </div>
             </form>
         </>
     )
+
 }
 
