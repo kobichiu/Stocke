@@ -8,12 +8,15 @@ export type Product = {
     price: number;
     usageCondition: UsageCondition;
     productCategory: ProductCategory;
+    isOpened: boolean;
+
     dateBought: string;
-    quantity: number;
-    bestBefore: string;
     dateOpen: string;
+    dateExpire: string;
     dateEmpty: string;
-    periodAfterOpen: number;
+
+    paoMonths: number; // 6, 12, 24
+
     note: string;
     // localStorage can store only string
     image: string;
@@ -21,7 +24,7 @@ export type Product = {
 
 export type UsageCondition =
     | "using"
-    | "to_be_opened"
+    | "to_be_used"
     | "empty"
     | "gave_away";
 
@@ -49,37 +52,18 @@ export type ProductCategory =
     | "toilet_paper"
     | "foot_care";
 
-export const usageOptions = {
+export type ExpiryMonths = 3 | 6 | 12;
+
+export type ExpiryFilters =
+    | ExpiryMonths
+    | "expired" ;
+
+export const usageOptions: Record<UsageCondition, string> = {
     using:        "Using",
-    to_be_opened: "To Be Opened",
+    to_be_used: "To Be Used",
     empty:        "Empty",
     gave_away:    "Gave Away",
 }
-
-// export const productOptions: Record<ProductCategory, string> = {
-//     body_lotion:      "Body Lotion",
-//     body_oil:         "Body Oil",
-//     body_shampoo:     "Body Shampoo",
-//     body_scrub:       "Body Scrub",
-//     eye_cream:        "Eye Cream",
-//     facial_cream:     "Facial Cream",
-//     face_mask:        "Face Mask",
-//     facial_serum:     "Facial Serum",
-//     facial_wash:      "Facial Wash",
-//     hand_soap:        "Hand Soap",
-//     toner:            "Toner",
-//     hair_shampoo:     "Hair Shampoo",
-//     hair_conditioner: "Hair Conditioner",
-//     hair_oil:         "Hair Oil",
-//     hair_treatment:   "Hair Treatment",
-//     handcream:        "Hand cream",
-//     mouth_wash:       "Mouth Wash",
-//     sun_screen:       "Sunscreen",
-//     tooth_paste:      "Toothpaste",
-//     dental_floss:     "Dental Floss",
-//     toilet_paper:     "Toilet paper",
-//     foot_care:        "Footcare",
-// }
 
 export const productOptions: Record<ProductCategory, string> = {
     body_lotion: "Body lotion",
@@ -109,7 +93,7 @@ export const productOptions: Record<ProductCategory, string> = {
 
 export const usageConditionStyle : Record<UsageCondition, string> = {
     using: "bg-lime-200 text-lime-700",
-    to_be_opened: "bg-yellow-200 text-yellow-700",
+    to_be_used: "bg-yellow-200 text-yellow-700",
     empty: "bg-red-200 text-red-700",
     gave_away: "bg-olive-200 text-olive-700",
 }

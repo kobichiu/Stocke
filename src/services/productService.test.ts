@@ -13,13 +13,13 @@ const sampleProduct: Product = {
     usageCondition: "using",
     productCategory: "facial_serum",
     dateBought: "2026-07-01",
-    quantity: 1,
-    bestBefore: "2027-07-01",
+    dateExpire: "2027-07-01",
     dateOpen: "2026-07-10",
     dateEmpty: "",
-    periodAfterOpen: 12,
+    paoMonths: 12,
     note: "Nice texture",
     image: "",
+    isOpened: false,
 };
 
 beforeEach(() => {

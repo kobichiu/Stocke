@@ -21,12 +21,12 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
     const [usageCondition, setUsageCondition] = useState<UsageCondition>("using");
     const [productCategory, setProductCategory] = useState<ProductCategory>("body_oil");
     const [dateBought, setDateBought] = useState<string>("");
-    const [quantity, setQuantity] = useState<string>("");
+    const [opened, setOpened] = useState<boolean>(false);
     const [price, setPrice] = useState<string>("");
-    const [bestBefore, setBestBefore] = useState<string>("");
+    const [dateExpire, setDateExpire] = useState<string>("");
     const [dateOpen, setDateOpen] = useState<string>("");
     const [dateEmpty, setDateEmpty] = useState<string>("");
-    const [periodAfterOpen, setPeriodAfterOpen] = useState<string>("");
+    const [paoMonths, setPaoMonths] = useState<string>("");
     const [note, setNote] = useState<string>("");
 
     const [originalProduct, setOriginalProduct] = useState<Product | null>(null);
@@ -41,12 +41,12 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
             productCategory !== originalProduct.productCategory ||
             volume !== String(originalProduct.volume ?? "") ||
             price !== String(originalProduct.price ?? "") ||
-            quantity !== String(originalProduct.quantity ?? "") ||
+            opened !== (originalProduct.isOpened ?? "") ||
             dateBought !== (originalProduct.dateBought ?? "") ||
             dateOpen !== (originalProduct.dateOpen ?? "") ||
             dateEmpty !== (originalProduct.dateEmpty ?? "") ||
-            bestBefore !== (originalProduct.bestBefore ?? "") ||
-            periodAfterOpen !== String(originalProduct.periodAfterOpen ?? "") ||
+            dateExpire !== (originalProduct.dateExpire ?? "") ||
+            paoMonths !== String(originalProduct.paoMonths ?? "") ||
             note !== (originalProduct.note ?? "")
         );
 
@@ -67,12 +67,12 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
             productCategory,
             volume: Number(volume),
             price: Number(price),
-            quantity: Number(quantity),
+            isOpened: Boolean(opened),
             dateBought,
             dateOpen,
             dateEmpty,
-            bestBefore,
-            periodAfterOpen: Number(periodAfterOpen),
+            dateExpire,
+            paoMonths: Number(paoMonths),
             note,
             image,
         };
@@ -104,12 +104,12 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
         setProductCategory(prod.productCategory);
         setVolume(String(prod.volume ?? ""));
         setPrice(String(prod.price ?? ""));
-        setQuantity(String(prod.quantity ?? ""));
-        setPeriodAfterOpen(String(prod.periodAfterOpen ?? ""));
+        setOpened(prod.isOpened ?? "");
+        setPaoMonths(String(prod.paoMonths ?? ""));
         setDateBought(prod.dateBought ?? "");
         setDateOpen(prod.dateOpen ?? "");
         setDateEmpty(prod.dateEmpty ?? "");
-        setBestBefore(prod.bestBefore ?? "");
+        setDateExpire(prod.dateExpire ?? "");
         setNote(prod.note ?? "");
     }, [id]);
 
@@ -276,13 +276,15 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label>Quantity</label>
-                            <input
-                                value={quantity}
-                                type="number"
-                                onChange={(e) => setQuantity(e.target.value)}
+                            <label>Is it opened?</label>
+                            <select
+                                value={opened ? "yes" : "no"}
+                                onChange={(e) => setOpened(e.target.value === "yes")}
                                 className="mt-1 mb-2 w-full rounded-lg bg-purple-100 p-2 focus:outline-violet-300"
-                            />
+                            >
+                                <option value="no">Not opened</option>
+                                <option value="yes">Opened</option>
+                            </select>
                         </div>
                     </div>
 
@@ -312,11 +314,11 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
                     {/* Date: Best before & Period After Opening (PAO) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 p-2 md:p-4 gap-3 md:gap-5">
                         <div className="flex flex-col">
-                            <label>Best Before</label>
+                            <label>Expiry</label>
                             <input
                                 type="date"
-                                value={bestBefore}
-                                onChange={(e) => setBestBefore(e.target.value)}
+                                value={dateExpire}
+                                onChange={(e) => setDateExpire(e.target.value)}
                                 className="mt-1 mb-2 w-full rounded-lg bg-purple-100 p-2 focus:outline-violet-300"
                             />
                         </div>
@@ -325,8 +327,8 @@ export default function EditForm({ onDirtyChange, onCancel }: EditFormProps) {  
                             <label>Period After Opening (months)</label>
                             <input
                                 type="number"
-                                value={periodAfterOpen}
-                                onChange={(e) => setPeriodAfterOpen(e.target.value)}
+                                value={paoMonths}
+                                onChange={(e) => setPaoMonths(e.target.value)}
                                 className="mt-1 mb-2 w-full rounded-lg bg-purple-100 p-2 focus:outline-violet-300"
                             />
                         </div>

@@ -20,16 +20,16 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
     const [usageCondition, setUsageCondition] = useState<UsageCondition>("using");
     const [productCategory, setProductCategory] = useState<ProductCategory>("body_lotion");
     const [dateBought, setDateBought] = useState<string>("");
-    const [quantity, setQuantity] = useState<string>("");
+    const [opened, setOpened] = useState<boolean>(false);
     const [price, setPrice] = useState<string>("");
-    const [bestBefore, setBestBefore] = useState<string>("");
+    const [dateExpire, setDateExpire] = useState<string>("");
     const [dateOpen, setDateOpen] = useState<string>("");
     const [dateEmpty, setDateEmpty] = useState<string>("");
-    const [periodAfterOpen, setPeriodAfterOpen] = useState<string>("");
+    const [paoMonths, setPaoMonths] = useState<string>("");
     const [note, setNote] = useState<string>("");
 
     const isUsing = usageCondition === "using";
-    const isToBeOpened = usageCondition === "to_be_opened";
+    const isToBeUsed = usageCondition === "to_be_used";
     const isGaveAway = usageCondition === "gave_away";
 
     const isDirty = (
@@ -37,11 +37,10 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
         brand!=="" ||
         volume!=="" ||
         price!=="" ||
-        quantity!=="" ||
-        bestBefore!=="" ||
+        dateExpire!=="" ||
         dateOpen!=="" ||
         dateEmpty!=="" ||
-        periodAfterOpen!=="" ||
+        paoMonths!=="" ||
         note!=="" ||
         image!==""
     );
@@ -63,13 +62,13 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
             volume: Number(volume),
             usageCondition,
             productCategory,
-            dateBought,
-            quantity: Number(quantity),
             price: Number(price),
-            bestBefore,
+            isOpened: Boolean(opened),
+            dateBought,
+            dateExpire,
             dateOpen,
             dateEmpty,
-            periodAfterOpen: Number(periodAfterOpen),
+            paoMonths: Number(paoMonths),
             note,
             image,
         };
@@ -85,13 +84,13 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
         setVolume("");
         setUsageCondition("using");
         setProductCategory("body_lotion");
+        setOpened(false);
         setDateBought("");
-        setQuantity("");
         setPrice("");
-        setBestBefore("");
+        setDateExpire("");
         setDateOpen("");
         setDateEmpty("");
-        setPeriodAfterOpen("");
+        setPaoMonths("");
         setNote("");
         setImage("");
         setImageError("");
@@ -176,28 +175,6 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
                         </div>
                     </div>
 
-                    {/* Usage Condition BAR TO BE ADDED */}
-                    <div className="flex flex-col p-2 md:p-4">
-                        <label>Usage Condition</label>
-                        <div
-                            className="grid grid-cols-2 sm:grid-cols-4 bg-purple-100 gap-2 rounded-xl mt-1 p-2 justify-between text-center">
-                            {Object.entries(usageOptions).map(([key, label]) => (
-                                <button
-                                    key={key}
-                                    type="button"
-                                    onClick={() => setUsageCondition(key as UsageCondition)}
-                                    className={`py-2 px-3 rounded-lg text-sm font-medium transition-all focus:outline-violet-300 ${
-                                        usageCondition === key
-                                            ? "bg-purple-400 text-white shadow-md"
-                                            : "text-gray-600 hover:bg-purple-50"
-                                    }`}
-                                >
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
                     <div className="p-2 md:p-4">
                         <label>Product Category</label>
                         <select
@@ -234,6 +211,28 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
                         </select>
                     </div>
 
+                    {/* Usage Condition BAR TO BE ADDED */}
+                    <div className="flex flex-col p-2 md:p-4">
+                        <label>Usage Condition</label>
+                        <div
+                            className="grid grid-cols-2 sm:grid-cols-4 bg-purple-100 gap-2 rounded-xl mt-1 p-2 justify-between text-center">
+                            {Object.entries(usageOptions).map(([key, label]) => (
+                                <button
+                                    key={key}
+                                    type="button"
+                                    onClick={() => setUsageCondition(key as UsageCondition)}
+                                    className={`py-2 px-3 rounded-lg text-sm font-medium transition-all focus:outline-violet-300 ${
+                                        usageCondition === key
+                                            ? "bg-purple-400 text-white shadow-md"
+                                            : "text-gray-600 hover:bg-purple-50"
+                                    }`}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Product Category stand alone */}
 
                     {/* Price & Volume */}
@@ -262,21 +261,23 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
                     {/* Date: Bought On & Quantity */}
                     <div className="grid grid-cols-1 md:grid-cols-2 p-2 md:p-4 gap-3 md:gap-5">
                         <div className="flex flex-col">
+                            <label>Is it opened?</label>
+                            <select
+                                value={opened ? "yes" : "no"}
+                                onChange={(e) => setOpened(e.target.value === "yes")}
+                                className="mt-1 mb-2 w-full rounded-lg bg-purple-100 p-2 focus:outline-violet-300"
+                            >
+                                <option value="no">Not opened</option>
+                                <option value="yes">Opened</option>
+                            </select>
+                        </div>
+
+                        <div className="flex flex-col">
                             <label>Bought On</label>
                             <input
                                 value={dateBought}
                                 type="date"
                                 onChange={(e) => setDateBought(e.target.value)}
-                                className="mt-1 mb-2 w-full rounded-lg bg-purple-100 p-2 focus:outline-violet-300"
-                            />
-                        </div>
-
-                        <div className="flex flex-col">
-                            <label>Quantity</label>
-                            <input
-                                value={quantity}
-                                type="number"
-                                onChange={(e) => setQuantity(e.target.value)}
                                 className="mt-1 mb-2 w-full rounded-lg bg-purple-100 p-2 focus:outline-violet-300"
                             />
                         </div>
@@ -289,7 +290,7 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
                             <input
                                 value={dateOpen}
                                 type="date"
-                                disabled={isToBeOpened}
+                                disabled={isToBeUsed}
                                 onChange={(e) => setDateOpen(e.target.value)}
                                 className="mt-1 mb-2 w-full rounded-lg bg-purple-100 p-2 focus:outline-violet-300 disabled:opacity-50"
                             />
@@ -300,21 +301,21 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
                             <input
                                 value={dateEmpty}
                                 type="date"
-                                disabled={isUsing || isToBeOpened || isGaveAway}
+                                disabled={isUsing || isToBeUsed || isGaveAway}
                                 onChange={(e) => setDateEmpty(e.target.value)}
                                 className="mt-1 mb-2 w-full rounded-lg bg-purple-100 p-2 focus:outline-violet-300 disabled:opacity-50"
                             />
                         </div>
                     </div>
 
-                    {/* Date: Best before & Period After Opening (PAO) */}
+                    {/* Date: Expiry & Period After Opening (PAO) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 p-2 md:p-4 gap-3 md:gap-5">
                         <div className="flex flex-col">
-                            <label>Best Before</label>
+                            <label>Expiry</label>
                             <input
-                                value={bestBefore}
+                                value={dateExpire}
                                 type="date"
-                                onChange={(e) => setBestBefore(e.target.value)}
+                                onChange={(e) => setDateExpire(e.target.value)}
                                 className="mt-1 mb-2 w-full rounded-lg bg-purple-100 p-2 focus:outline-violet-300"
                             />
                         </div>
@@ -322,9 +323,9 @@ export default function AddForm({ onDirtyChange, onCancel }: AddFormProps) {
                         <div className="flex flex-col">
                             <label>Period After Opening</label>
                             <input
-                                value={periodAfterOpen}
+                                value={paoMonths}
                                 type="number"
-                                onChange={(e) => setPeriodAfterOpen(e.target.value)}
+                                onChange={(e) => setPaoMonths(e.target.value)}
                                 className="mt-1 mb-2 w-full rounded-lg bg-purple-100 p-2 focus:outline-violet-300"
                             />
                         </div>

@@ -4,36 +4,57 @@ import BottomNavBar from "../components/layout/BottomNavBar.tsx";
 import {useState} from "react";
 import {FiFilter} from "react-icons/fi";
 import {AiOutlineDelete} from "react-icons/ai";
-import {MdOutlineModeEdit} from "react-icons/md";
+import {MdExpandMore, MdOutlineModeEdit} from "react-icons/md";
 import {IoPricetagsOutline} from "react-icons/io5";
 import {BsBeaker} from "react-icons/bs";
-import { MdExpandMore } from "react-icons/md";
-import { BiPlus } from "react-icons/bi";
-import type {Product, UsageCondition, ProductCategory} from "../products.ts";
-import {usageConditionStyle} from "../products.ts";
-import {usageOptions, productOptions} from "../products.ts";
+import {BiPlus} from "react-icons/bi";
+import type {Product, ProductCategory, UsageCondition, ExpiryFilters} from "../products.ts";
+import {productOptions, usageConditionStyle, usageOptions} from "../products.ts";
 import {productService} from "../services/productService.ts";
+import {filterProducts, uniqueRecordedProductCategory, uniqueRecordedUsageCondition} from "../dashboardFilter.ts";
+import placeholder from "../placeholder.png";
 
 export default function DashboardPage() {
     const navigate = useNavigate();
-    const [selectedTag, setSelectedTag] = useState<UsageCondition | null>(null);
+    const [selectedTag, setSelectedTag] = useState<UsageCondition | ProductCategory | ExpiryFilters | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
     /* ---------------- DATA ---------------- */
 
     const products: Product[] = productService.getAll();
 
-    const filterProducts = selectedTag
-        ? products.filter((product) => product.usageCondition === selectedTag)
-        : products;
+    const filteredProducts = filterProducts(products, selectedTag);
 
-    const uniqueUsedCategory = Array.from(
-        new Set(products.map((item) => item.productCategory))
-    ) as ProductCategory[];
+    const categories = uniqueRecordedProductCategory(products);
+    const usageConditions = uniqueRecordedUsageCondition(products);
+    const expiringButton = [
+        { label: "Expiring in 3 months", months: 3 },
+        { label: "Expiring in 6 months", months: 6 },
+        { label: "Expiring in 12 months", months: 12 },
+    ] as const;
 
-    const uniqueUsedUsageCondition = Array.from(
-        new Set(products.map((item) => item.usageCondition))
-    ) as UsageCondition[];
+    const combinedTags = [
+        ...categories.map((item) => ({
+            type: "category" as const,
+            value: item,
+            label: productOptions[item],
+        })),
+        ...usageConditions.map((item) => ({
+            type: "usage" as const,
+            value: item,
+            label: usageOptions[item],
+        })),
+        ...expiringButton.map((item) => ({
+            type: "expiry" as const,
+            value: item.months,
+            label: item.label,
+        })), {
+            type: "expiry" as const,
+            value: "expired" as const,
+            label: "Expired",
+        },
+    ];
 
     function deleteProduct(id: string) {
         productService.delete(id);
@@ -57,9 +78,9 @@ export default function DashboardPage() {
                             Your current inventory
                         </h1>
                         <span>
-                            {/*plural/single handling*/}
+                            {/* plural/single handling NEED TO BE CORRECTED, CATER FOR QUANTITY*/}
                             {products.length} {products.length > 1 ? "products " : "product "}
-                            across {uniqueUsedCategory.length} {uniqueUsedCategory.length > 1 ? "categories" : "category"}
+                            across {categories.length} {categories.length > 1 ? "categories" : "category"}
                         </span>
                     </div>
 
@@ -82,7 +103,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* FILTERS */}
-                <section className="flex flex-nowrap gap-4 overflow-x-auto py-4">
+                <section className="flex flex-nowrap gap-4 overflow-x-auto py-4 scrollbar-thumb-purple-300 scrollbar-track-transparent">
                     <button
                         onClick={() => setSelectedTag(null)}
                         className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
@@ -94,35 +115,44 @@ export default function DashboardPage() {
                         All Items
                     </button>
 
-                    {uniqueUsedUsageCondition.map((item) => (
+                    {combinedTags.map((item) => (
                         <button
-                            key={item}
-                            onClick={() => setSelectedTag(item)}
+                            key={`${item.type}-${item.value}`}
+                            onClick={() => setSelectedTag(item.value)}
                             className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
-                                selectedTag === item
+                                selectedTag === item.value
                                     ? "bg-purple-400 text-white"
                                     : "bg-white/40"
                             }`}
                         >
-                            {usageOptions[item]}
+                            {item.label}
                         </button>
                     ))}
                 </section>
 
-                <hr className="border-[#C8C4DB]"/>
+                <hr className="border-[#C8C4DB] mt-2"/>
 
                 {/* GRID */}
                 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 py-6">
-                    {filterProducts.map((item) => (
+                    {filteredProducts.map((item) => (
                         <div
                             key={item.id}
                             className="flex flex-col rounded-2xl bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
                         >
                             <div className="relative">
-                                <img
+                                {item.image && (
+                                    <img
                                     className="rounded-2xl w-full aspect-square object-cover"
                                     src={item.image}
-                                />
+                                    alt={item.product}
+                                />)}
+                                {!item.image && (
+                                    <img
+                                        className="rounded-2xl w-full aspect-square object-cover"
+                                        src={placeholder}
+                                        alt={item.product}
+                                    />
+                                )}
                                 <span
                                     className={`absolute bottom-3 left-3 px-3 py-1 rounded-full text-sm ${usageConditionStyle[item.usageCondition]}`}>
                                     {usageOptions[item.usageCondition]}
@@ -158,7 +188,7 @@ export default function DashboardPage() {
                                         className="group flex flex-row items-center gap-1 p-2 pl-0 rounded-lg transition-all duration-300 ease-out whitespace-nowrap hover:scale-105"
                                     >
                                         More details
-                                        <MdExpandMore size={24} />
+                                        <MdExpandMore size={24}/>
                                     </Link>
 
                                     <div className="flex items-center gap-1">
@@ -203,7 +233,7 @@ export default function DashboardPage() {
                     </div>
                 </section>
             </main>
-            <BottomNavBar />
+            <BottomNavBar/>
             {showModal && (
                 <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center">
                     <div className="bg-white w-full sm:w-auto rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4">
@@ -213,7 +243,9 @@ export default function DashboardPage() {
                         <div className="flex flex-col gap-3">
                             <button
                                 className="w-full py-3 rounded-2xl bg-zinc-100 text-zinc-500 font-medium hover:bg-zinc-200 active:scale-95 transition-all"
-                                onClick={() => {setShowModal(false)}}
+                                onClick={() => {
+                                    setShowModal(false)
+                                }}
                             >
                                 Cancel
                             </button>

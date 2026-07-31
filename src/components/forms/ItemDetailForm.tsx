@@ -2,15 +2,16 @@ import {type Product, productOptions, usageConditionStyle, usageOptions} from ".
 import {LiaShoppingBagSolid} from "react-icons/lia";
 import {IoPricetagsOutline} from "react-icons/io5";
 import {BsBeaker} from "react-icons/bs";
-import {AiOutlineDelete, AiOutlineNumber} from "react-icons/ai";
+import {AiOutlineDelete} from "react-icons/ai";
 import {Link, useParams} from "react-router-dom";
-import {MdOutlineModeEdit} from "react-icons/md";
+import {MdLock, MdLockOpen, MdOutlineModeEdit} from "react-icons/md";
 import {productService} from "../../services/productService.ts";
 
 interface ItemDetailFormProps {
     onDelete: (id: string) => void;
 }
-export default function ItemDetailForm({ onDelete }: ItemDetailFormProps) {
+
+export default function ItemDetailForm({onDelete}: ItemDetailFormProps) {
 
     const {id} = useParams();
     const products: Product[] = productService.getAll();
@@ -48,32 +49,64 @@ export default function ItemDetailForm({ onDelete }: ItemDetailFormProps) {
                                     {usageOptions[product.usageCondition]}
                                 </span>
                         </div>
-                        {/* Product Name */}
-                        <h1 className="text-3xl font-extrabold text-[#1E1A23] my-2">
-                            {product.product}
-                        </h1>
+                        <div className="flex justify-between items-center">
+
+                            {/* Product Name */}
+                            <h1 className="text-3xl font-extrabold text-[#1E1A23] my-2">
+                                {product.product}
+                            </h1>
+
+                            {/* Opened/ Unopened */}
+                            <span
+                                className={`inline-flex items-center px-3 py-1 rounded-full text-sm gap-2 whitespace-nowrap border ${
+                                    product.isOpened
+                                        ? "bg-purple-100 text-violet-600 border-violet-200"
+                                        : "bg-gray-100 text-gray-600 border-gray-400"
+                                }`}
+                            >
+                                {product.isOpened ? (
+                                    <>
+                                        <MdLockOpen/>
+                                        Opened
+                                    </>
+                                ) : (
+                                    <>
+                                        <MdLock/>
+                                        Not opened yet
+                                    </>
+                                )}
+                            </span>
+                        </div>
 
                         <div className="flex justify-start items-center gap-3 my-2">
                             {/* Category of Product */}
                             <span
-                                className="inline-flex items-center px-3 py-1 bg-[#F3EEFF] text-[#6A5A83] border border-[#DACFF0] rounded-full text-sm gap-2">
+                                className="inline-flex items-center px-3 py-1 bg-[#F3EEFF] text-[#6A5A83] border border-[#DACFF0] rounded-full text-sm gap-2 whitespace-nowrap">
                                     <LiaShoppingBagSolid/> {productOptions[product.productCategory]}
-                                </span>
+                            </span>
                             {/* Price */}
                             <span
-                                className="inline-flex items-center px-3 py-1 bg-[#F3EEFF] text-[#6A5A83] border border-[#DACFF0] rounded-full text-sm gap-2">
+                                className="inline-flex items-center px-3 py-1 bg-[#F3EEFF] text-[#6A5A83] border border-[#DACFF0] rounded-full text-sm gap-2 whitespace-nowrap">
                                     <IoPricetagsOutline/> {product.price}
-                                </span>
-                            {/* Volume*/}
+                            </span>
+                            {/* Volume */}
                             <span
-                                className="inline-flex items-center px-3 py-1 bg-[#F3EEFF] text-[#6A5A83] border border-[#DACFF0] rounded-full text-sm gap-2">
+                                className="inline-flex items-center px-3 py-1 bg-[#F3EEFF] text-[#6A5A83] border border-[#DACFF0] rounded-full text-sm gap-2 whitespace-nowrap">
                                     <BsBeaker/> {product.volume} ml
-                                </span>
-                            {/* Quantity */}
-                            <span
-                                className="inline-flex items-center px-3 py-1 bg-[#F3EEFF] text-[#6A5A83] border border-[#DACFF0] rounded-full text-sm gap-2">
-                                    <AiOutlineNumber/>{product.quantity}
-                                </span>
+                            </span>
+                            {/*/!* Opened/ Unopened *!/*/}
+                            {/*<span*/}
+                            {/*    className="inline-flex items-center px-3 py-1 bg-[#F3EEFF] text-[#6A5A83] border border-[#DACFF0] rounded-full text-sm gap-2 whitespace-nowrap">*/}
+                            {/*        {product.isOpened ?*/}
+                            {/*            <>*/}
+                            {/*                <MdLockOpen/>Opened*/}
+                            {/*            </>*/}
+                            {/*            :*/}
+                            {/*            <>*/}
+                            {/*                <MdLock/>Not opened*/}
+                            {/*            </>*/}
+                            {/*        }*/}
+                            {/*</span>*/}
                         </div>
 
                         <hr className="my-4 text-[#DACFF0]"/>
@@ -82,31 +115,31 @@ export default function ItemDetailForm({ onDelete }: ItemDetailFormProps) {
                             {/* MERGED TOP CELL */}
                             <div className="col-span-2 p-3 border-b border-purple-200">
                                 <p className="text-sm text-[#9E8FB5] font-normal uppercase">Bought On</p>
-                                <p className="text-olive-600">{product.dateBought || "-"}</p>
+                                <p className="text-olive-600">{product.dateBought ? new Date(product.dateBought).toLocaleDateString("en-GB") : "-"}</p>
                             </div>
 
                             {/* Row 1 */}
                             <div className="border-r border-b border-purple-200 p-3">
                                 <p className="text-sm text-[#9E8FB5] font-normal uppercase">Opened On</p>
-                                <p className="text-olive-600">{product.dateOpen || "-"}</p>
+                                <p className="text-olive-600">{product.dateOpen ? new Date(product.dateOpen).toLocaleDateString("en-GB") : "-"}</p>
                             </div>
 
                             <div className="border-b border-purple-200 p-3">
                                 <p className="text-sm text-[#9E8FB5] font-normal uppercase">Finished On</p>
-                                <p className="text-olive-600">{product.dateEmpty || "-"}</p>
+                                <p className="text-olive-600">{product.dateEmpty ? new Date(product.dateEmpty).toLocaleDateString("en-GB") : "-"}</p>
                             </div>
 
                             {/* Row 2 */}
                             <div className="border-r border-purple-200 p-3">
-                                <p className="text-sm text-[#9E8FB5] font-normal uppercase">Best Before</p>
-                                <p className="text-olive-600">{product.bestBefore || "-"}</p>
+                                <p className="text-sm text-[#9E8FB5] font-normal uppercase">Expiry</p>
+                                <p className="text-olive-600">{product.dateExpire ? new Date(product.dateExpire).toLocaleDateString("en-GB") : "-"}</p>
                             </div>
 
                             <div className="p-3">
                                 <p className="text-sm text-[#9E8FB5] font-normal uppercase">Period After Opening</p>
                                 <p className="text-olive-600">
-                                    {product.periodAfterOpen
-                                        ? `${product.periodAfterOpen} months`
+                                    {product.paoMonths
+                                        ? `${product.paoMonths} months`
                                         : "-"}
                                 </p>
                             </div>
