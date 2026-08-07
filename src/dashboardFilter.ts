@@ -1,4 +1,4 @@
-import type {Product, ProductCategory, UsageCondition} from "./products.ts";
+import type {Product, ProductCategory, UsageCondition, SortBy} from "./products.ts";
 
 // type SelectedTag = UsageCondition | ProductCategory | ExpiryFilters | null;
 
@@ -128,9 +128,41 @@ export function expired(products: Product[]) {
     return result;
 }
 
+{/* SORT BY */}
+{/* added from newest to oldest & added from oldest to newest */}
+{/* price high to low & price low to high */}
+export function sortedFilteredProduct(products: Product[], selectedSortBy: SortBy | null): Product[] {
+    {/* if selectedSortBy is null */}
+    {/* if selectedSortBy is added_new_to_old */}
+    if (selectedSortBy === null) {
+        return products;
+    }
+    if (selectedSortBy === "added_new_to_old") {
+        return sortAddedNewToOld(products);
+    }
+    if (selectedSortBy === "added_old_to_new") {
+        return sortAddedOldToNew(products);
+    }
+    {/* if selectedSortBy is added_old_to_new */}
+    {/* if selectedSortBy is price_high_to_low */}
+    {/* if selectedSortBy is price_low_to_high */}
+    return products;
+}
 
+export function sortAddedNewToOld(products: Product[]): Product[] {
+    return [...products].sort((a, b) => {
+        const dateA = Math.floor(new Date(a.dateAdded).getTime() / 1000);
+        const dateB = Math.floor(new Date(b.dateAdded).getTime() / 1000);
 
-{/* 5. added from newest to oldest */}
-{/* 6. added from oldest to newest */}
-{/* 7. price high to low */}
-{/* 8. price low to high */}
+        return dateB - dateA;
+    });
+}
+
+export function sortAddedOldToNew(products: Product[]): Product[] {
+    return [...products].sort((a, b) => {
+        const dateA = Math.floor(new Date(a.dateAdded).getTime() / 1000);
+        const dateB = Math.floor(new Date(b.dateAdded).getTime() / 1000);
+
+        return dateA - dateB;
+    });
+}

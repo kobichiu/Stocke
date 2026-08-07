@@ -2,21 +2,21 @@ import {Link, useNavigate} from "react-router-dom";
 import NavbarAfterLogIn from "../components/layout/NavbarAfterLogIn.tsx";
 import BottomNavBar from "../components/layout/BottomNavBar.tsx";
 import {useState} from "react";
-import {FiFilter} from "react-icons/fi";
 import {AiOutlineDelete} from "react-icons/ai";
 import {MdExpandMore, MdOutlineModeEdit} from "react-icons/md";
 import {IoPricetagsOutline} from "react-icons/io5";
 import {BsBeaker} from "react-icons/bs";
 import {BiPlus} from "react-icons/bi";
-import type {Product, ProductCategory, UsageCondition, ExpiryFilters} from "../products.ts";
+import type {Product, ProductCategory, UsageCondition, ExpiryFilters, SortBy} from "../products.ts";
 import {productOptions, usageConditionStyle, usageOptions} from "../products.ts";
 import {productService} from "../services/productService.ts";
-import {filterProducts, uniqueRecordedProductCategory, uniqueRecordedUsageCondition} from "../dashboardFilter.ts";
+import {filterProducts, uniqueRecordedProductCategory, uniqueRecordedUsageCondition, sortedFilteredProduct} from "../dashboardFilter.ts";
 import placeholder from "../placeholder.png";
 
 export default function DashboardPage() {
     const navigate = useNavigate();
-    const [selectedTag, setSelectedTag] = useState<UsageCondition | ProductCategory | ExpiryFilters | null>(null);
+    const [selectedFilter, setSelectedFilter] = useState<UsageCondition | ProductCategory | ExpiryFilters | null>(null);
+    const [selectedSortBy, setSelectedSortBy] = useState<SortBy | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
@@ -24,7 +24,8 @@ export default function DashboardPage() {
 
     const products: Product[] = productService.getAll();
 
-    const filteredProducts = filterProducts(products, selectedTag);
+    const filteredProducts = filterProducts(products, selectedFilter);
+    const sortedFilteredProd = sortedFilteredProduct(filteredProducts, selectedSortBy);
 
     const categories = uniqueRecordedProductCategory(products);
     const usageConditions = uniqueRecordedUsageCondition(products);
@@ -63,13 +64,15 @@ export default function DashboardPage() {
         navigate("/dashboard");
     }
 
+    const listToDisplay = selectedSortBy !== null ? sortedFilteredProd : filteredProducts;
+
     /* ---------------- UI ---------------- */
 
     return (
         <div className="bg-[#f3eeff] min-h-screen ">
             <NavbarAfterLogIn/>
 
-            <main className="pt-20 px-6 md:px-8 py-8 w-full mx-auto max-w-6xl">
+            <main className="pt-20 px-6 md:px-8 py-8 w-full h-screen mx-auto max-w-6xl">
                 {/* HEADER */}
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between py-10">
                     <div className="flex flex-col relative gap-2">
@@ -85,12 +88,12 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="flex gap-2 my-4">
-                        <button
-                            className="px-5 py-2 bg-transparent border border-purple-900 text-purple-900 rounded-full font-bold flex items-center gap-2 transition-all hover:border-transparent hover:bg-purple-400 hover:text-white outline-none focus:outline-none"
-                        >
-                            <FiFilter/>
-                            <span className="font-bold">Filter</span>
-                        </button>
+                        {/*<button*/}
+                        {/*    className="px-5 py-2 bg-transparent border border-purple-900 text-purple-900 rounded-full font-bold flex items-center gap-2 transition-all hover:border-transparent hover:bg-purple-400 hover:text-white outline-none focus:outline-none"*/}
+                        {/*>*/}
+                        {/*    <FiFilter/>*/}
+                        {/*    <span className="font-bold">Filter</span>*/}
+                        {/*</button>*/}
 
                         <Link
                             to="/add"
@@ -104,10 +107,11 @@ export default function DashboardPage() {
 
                 {/* FILTERS */}
                 <section className="flex flex-nowrap gap-4 overflow-x-auto py-4 scrollbar-thumb-purple-300 scrollbar-track-transparent">
+                    <p>Filters</p>
                     <button
-                        onClick={() => setSelectedTag(null)}
+                        onClick={() => setSelectedFilter(null)}
                         className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
-                            selectedTag === null
+                            selectedFilter === null
                                 ? "bg-purple-400 text-white"
                                 : "bg-white/40"
                         }`}
@@ -118,9 +122,9 @@ export default function DashboardPage() {
                     {combinedTags.map((item) => (
                         <button
                             key={`${item.type}-${item.value}`}
-                            onClick={() => setSelectedTag(item.value)}
+                            onClick={() => setSelectedFilter(item.value)}
                             className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
-                                selectedTag === item.value
+                                selectedFilter === item.value
                                     ? "bg-purple-400 text-white"
                                     : "bg-white/40"
                             }`}
@@ -130,11 +134,56 @@ export default function DashboardPage() {
                     ))}
                 </section>
 
+                {/* SORT BY*/}
+                <section className="flex flex-nowrap gap-4 overflow-x-auto py-4 scrollbar-thumb-purple-300 scrollbar-track-transparent">
+                    <p className="whitespace-nowrap underline">Sort By</p>
+                    <button
+                        onClick={() => setSelectedSortBy("added_new_to_old")}
+                        className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
+                            selectedSortBy === "added_new_to_old"
+                                ? "bg-purple-400 text-white"
+                                : "bg-white/40"
+                        }`}
+                    >
+                        Added newest to oldest
+                    </button>
+                    <button
+                        onClick={() => setSelectedSortBy("added_old_to_new")}
+                        className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
+                            selectedSortBy === "added_old_to_new"
+                                ? "bg-purple-400 text-white"
+                                : "bg-white/40"
+                        }`}
+                    >
+                        Added oldest to newest
+                    </button>
+                    <button
+                        onClick={() => setSelectedSortBy("price_high_to_low")}
+                        className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
+                            selectedSortBy === "price_high_to_low"
+                                ? "bg-purple-400 text-white"
+                                : "bg-white/40"
+                        }`}
+                    >
+                        Price highest to lowest
+                    </button>
+                    <button
+                        onClick={() => setSelectedSortBy("price_low_to_high")}
+                        className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
+                            selectedSortBy === "price_low_to_high"
+                                ? "bg-purple-400 text-white"
+                                : "bg-white/40"
+                        }`}
+                    >
+                        Price lowest to highest
+                    </button>
+                </section>
+
                 <hr className="border-[#C8C4DB] mt-2"/>
 
                 {/* GRID */}
                 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 py-6">
-                    {filteredProducts.map((item) => (
+                    {listToDisplay.map((item) => (
                         <div
                             key={item.id}
                             className="flex flex-col rounded-2xl bg-white p-6 shadow-sm hover:shadow-md transition-shadow"

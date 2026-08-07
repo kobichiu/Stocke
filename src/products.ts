@@ -52,6 +52,12 @@ export type ProductCategory =
     | "toilet_paper"
     | "foot_care";
 
+export type SortBy =
+    | "added_new_to_old"
+    | "added_old_to_new"
+    | "price_high_to_low"
+    | "price_low_to_high"
+
 export type ExpiryMonths = 3 | 6 | 12;
 
 export type ExpiryFilters =
