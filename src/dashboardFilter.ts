@@ -143,9 +143,12 @@ export function sortedFilteredProduct(products: Product[], selectedSortBy: SortB
     if (selectedSortBy === "added_old_to_new") {
         return sortAddedOldToNew(products);
     }
-    {/* if selectedSortBy is added_old_to_new */}
-    {/* if selectedSortBy is price_high_to_low */}
-    {/* if selectedSortBy is price_low_to_high */}
+    if (selectedSortBy === "price_high_to_low") {
+        return sortPriceHighToLow(products);
+    }
+    if (selectedSortBy === "price_low_to_high") {
+        return sortPriceLowToHigh(products);
+    }
     return products;
 }
 
@@ -165,4 +168,18 @@ export function sortAddedOldToNew(products: Product[]): Product[] {
 
         return dateA - dateB;
     });
+}
+
+export function sortPriceHighToLow(products: Product[]): Product[] {
+    return [...products].sort((a, b) => {
+        return b.price - a.price;
+    });
+
+}
+
+export function sortPriceLowToHigh(products: Product[]): Product[] {
+    return [...products].sort((a, b) => {
+        return a.price - b.price;
+    });
+
 }

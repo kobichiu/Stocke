@@ -6,11 +6,18 @@ import {AiOutlineDelete} from "react-icons/ai";
 import {MdExpandMore, MdOutlineModeEdit} from "react-icons/md";
 import {IoPricetagsOutline} from "react-icons/io5";
 import {BsBeaker} from "react-icons/bs";
-import {BiPlus} from "react-icons/bi";
-import type {Product, ProductCategory, UsageCondition, ExpiryFilters, SortBy} from "../products.ts";
+import {BiPlus, BiSortAlt2} from "react-icons/bi";
+import {TiTick} from "react-icons/ti";
+import { GrPowerReset } from "react-icons/gr";
+import type {ExpiryFilters, Product, ProductCategory, SortBy, UsageCondition} from "../products.ts";
 import {productOptions, usageConditionStyle, usageOptions} from "../products.ts";
 import {productService} from "../services/productService.ts";
-import {filterProducts, uniqueRecordedProductCategory, uniqueRecordedUsageCondition, sortedFilteredProduct} from "../dashboardFilter.ts";
+import {
+    filterProducts,
+    sortedFilteredProduct,
+    uniqueRecordedProductCategory,
+    uniqueRecordedUsageCondition
+} from "../dashboardFilter.ts";
 import placeholder from "../placeholder.png";
 
 export default function DashboardPage() {
@@ -19,6 +26,7 @@ export default function DashboardPage() {
     const [selectedSortBy, setSelectedSortBy] = useState<SortBy | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+    const [isSortByOpen, setIsSortByOpen] = useState<boolean>(false);
 
     /* ---------------- DATA ---------------- */
 
@@ -30,9 +38,9 @@ export default function DashboardPage() {
     const categories = uniqueRecordedProductCategory(products);
     const usageConditions = uniqueRecordedUsageCondition(products);
     const expiringButton = [
-        { label: "Expiring in 3 months", months: 3 },
-        { label: "Expiring in 6 months", months: 6 },
-        { label: "Expiring in 12 months", months: 12 },
+        {label: "Expiring in 3 months", months: 3},
+        {label: "Expiring in 6 months", months: 6},
+        {label: "Expiring in 12 months", months: 12},
     ] as const;
 
     const combinedTags = [
@@ -64,6 +72,13 @@ export default function DashboardPage() {
         navigate("/dashboard");
     }
 
+    const sortByTag: Record<SortBy, string> = {
+        added_new_to_old    : "Added New to Old",
+        added_old_to_new    : "Added Old to New",
+        price_high_to_low   : "Price High to Low",
+        price_low_to_high   : "Price Low to High",
+    }
+
     const listToDisplay = selectedSortBy !== null ? sortedFilteredProd : filteredProducts;
 
     /* ---------------- UI ---------------- */
@@ -72,7 +87,7 @@ export default function DashboardPage() {
         <div className="bg-[#f3eeff] min-h-screen ">
             <NavbarAfterLogIn/>
 
-            <main className="pt-20 px-6 md:px-8 py-8 w-full h-screen mx-auto max-w-6xl">
+            <main className="pt-20 px-6 md:px-8 py-8 w-full mx-auto max-w-6xl">
                 {/* HEADER */}
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between py-10">
                     <div className="flex flex-col relative gap-2">
@@ -106,8 +121,8 @@ export default function DashboardPage() {
                 </div>
 
                 {/* FILTERS */}
-                <section className="flex flex-nowrap gap-4 overflow-x-auto py-4 scrollbar-thumb-purple-300 scrollbar-track-transparent">
-                    <p>Filters</p>
+                <section
+                    className="flex flex-nowrap gap-4 overflow-x-auto pt-4 pb-2 scrollbar-thumb-purple-300 scrollbar-track-transparent scrollbar-thin scroll-smooth">
                     <button
                         onClick={() => setSelectedFilter(null)}
                         className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
@@ -134,52 +149,87 @@ export default function DashboardPage() {
                     ))}
                 </section>
 
-                {/* SORT BY*/}
-                <section className="flex flex-nowrap gap-4 overflow-x-auto py-4 scrollbar-thumb-purple-300 scrollbar-track-transparent">
-                    <p className="whitespace-nowrap underline">Sort By</p>
-                    <button
-                        onClick={() => setSelectedSortBy("added_new_to_old")}
-                        className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
-                            selectedSortBy === "added_new_to_old"
-                                ? "bg-purple-400 text-white"
-                                : "bg-white/40"
-                        }`}
-                    >
-                        Added newest to oldest
-                    </button>
-                    <button
-                        onClick={() => setSelectedSortBy("added_old_to_new")}
-                        className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
-                            selectedSortBy === "added_old_to_new"
-                                ? "bg-purple-400 text-white"
-                                : "bg-white/40"
-                        }`}
-                    >
-                        Added oldest to newest
-                    </button>
-                    <button
-                        onClick={() => setSelectedSortBy("price_high_to_low")}
-                        className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
-                            selectedSortBy === "price_high_to_low"
-                                ? "bg-purple-400 text-white"
-                                : "bg-white/40"
-                        }`}
-                    >
-                        Price highest to lowest
-                    </button>
-                    <button
-                        onClick={() => setSelectedSortBy("price_low_to_high")}
-                        className={`shrink-0 whitespace-nowrap px-5 py-2 rounded-full font-bold transition outline-none focus:outline-none ${
-                            selectedSortBy === "price_low_to_high"
-                                ? "bg-purple-400 text-white"
-                                : "bg-white/40"
-                        }`}
-                    >
-                        Price lowest to highest
-                    </button>
-                </section>
-
                 <hr className="border-[#C8C4DB] mt-2"/>
+
+                <div className="flex justify-end py-4">
+                    <button
+                        onClick={() => {
+                            setSelectedFilter(null);
+                            setSelectedSortBy(null)
+                        }}
+                        className="px-5 py-2 bg-transparent text-purple-900 rounded-lg font-bold flex items-center gap-2 transition-all hover:border-transparent hover:bg-purple-400 hover:text-white outline-none focus:outline-none"
+                    >
+                        <GrPowerReset/>
+                        <span className="font-bold">Reset</span>
+                    </button>
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsSortByOpen(!isSortByOpen)}
+                            className="px-5 py-2 bg-transparent text-purple-900 rounded-lg font-bold flex items-center gap-2 transition-all hover:border-transparent hover:bg-purple-400 hover:text-white outline-none focus:outline-none"
+                        >
+                            <BiSortAlt2/>
+                            <span className="font-bold">Sort By
+                                {selectedSortBy && `: ${sortByTag[selectedSortBy]}`}</span>
+                        </button>
+                        {isSortByOpen && (
+                            <div className="absolute right-0 z-10 mt-2 w-64 rounded-2xl bg-white p-2 shadow-lg">
+                                <button
+                                    onClick={() => {
+                                        setSelectedSortBy("added_new_to_old");
+                                        setIsSortByOpen(false);
+                                    }}
+                                    className="flex w-full items-center justify-between rounded-xl px-4 py-2 text-left hover:bg-purple-100"
+                                >
+                                    <span>Added newest to oldest</span>
+                                    {selectedSortBy === "added_new_to_old" && (
+                                        <TiTick className="text-purple-500" />
+                                    )}
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setSelectedSortBy("added_old_to_new");
+                                        setIsSortByOpen(false);
+                                    }}
+                                    className="flex w-full items-center justify-between rounded-xl px-4 py-2 text-left hover:bg-purple-100"
+                                >
+                                    <span>Added oldest to newest</span>
+
+                                    {selectedSortBy === "added_old_to_new" && (
+                                        <TiTick className="text-purple-500" />
+                                    )}
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setSelectedSortBy("price_high_to_low");
+                                        setIsSortByOpen(false);
+                                    }}
+                                    className="flex w-full items-center justify-between rounded-xl px-4 py-2 text-left hover:bg-purple-100"
+                                >
+                                    <span>Price highest to lowest</span>
+                                    {selectedSortBy === "price_high_to_low" && (
+                                        <TiTick className="text-purple-500" />
+                                    )}
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setSelectedSortBy("price_low_to_high");
+                                        setIsSortByOpen(false);
+                                    }}
+                                    className="flex w-full items-center justify-between rounded-xl px-4 py-2 text-left hover:bg-purple-100"
+                                >
+                                    <span>Price lowest to highest</span>
+                                    {selectedSortBy === "price_low_to_high" && (
+                                        <TiTick className="text-purple-500" />
+                                    )}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
 
                 {/* GRID */}
                 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 py-6">
@@ -191,10 +241,10 @@ export default function DashboardPage() {
                             <div className="relative">
                                 {item.image && (
                                     <img
-                                    className="rounded-2xl w-full aspect-square object-cover"
-                                    src={item.image}
-                                    alt={item.product}
-                                />)}
+                                        className="rounded-2xl w-full aspect-square object-cover"
+                                        src={item.image}
+                                        alt={item.product}
+                                    />)}
                                 {!item.image && (
                                     <img
                                         className="rounded-2xl w-full aspect-square object-cover"
@@ -281,6 +331,12 @@ export default function DashboardPage() {
                         </span>
                     </div>
                 </section>
+
+                <div className="flex justify-center py-5">
+                    <span className="text-sm text-[#9E8FB5] font-normal uppercase">
+                        {listToDisplay.length} {listToDisplay.length === 1 ? "product" : "products"} found
+                    </span>
+                </div>
             </main>
             <BottomNavBar/>
             {showModal && (
