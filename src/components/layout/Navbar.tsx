@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 
 export default function Navbar() {
     return (
-        <nav className="bg-white sticky top-0">
-            <div className="mx-auto flex max-w-6xl flex-row items-center justify-between px-4 py-4 md:px-8">
+        <nav className="bg-white sticky top-0 z-30">
+            <div className="mx-auto flex max-w-6xl flex-row items-center justify-between px-8 py-4 md:px-10">
                 <div className="flex items-center justify-between text-[#26113C] font-bold text-xl">
                     Stócke
                 </div>
