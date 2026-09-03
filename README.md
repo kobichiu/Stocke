@@ -1,6 +1,8 @@
-# Stócke
+# Stócke (working in progress)
 
 A Progressive Web App for managing and organizing a personal skincare and cosmetics collection.
+
+<kbd>![Public landing page](assets/demo.png)</kbd>
 
 ## Tech Stack
 
@@ -14,16 +16,9 @@ A Progressive Web App for managing and organizing a personal skincare and cosmet
 - Add and manage products
 - Filter and browse products
 - Responsive UI
-- Progressive Web App (PWA)
 
 ## Status
 
 🚧 Work in progress
 
 Currently developing and improving the application.
-
-## Getting Started
-
-```bash
-npm install
-npm run dev
