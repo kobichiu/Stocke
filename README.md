@@ -1,7 +1,9 @@
 # Stócke (working in progress)
 
 A Progressive Web App for managing and organizing a personal skincare and cosmetics collection.
-<kbd><img src="assets/demo.png?v=2" alt="Public landing page" width="600"></kbd>
+
+<kbd><img src="assets/demo.png?v=2" alt="Public landing page" width="800"></kbd>
+
 ## Tech Stack
 
 - React
