@@ -1,19 +1,18 @@
 import Navbar from "../components/layout/Navbar.tsx";
 import {motion} from "framer-motion";
-import lotion from "../../public/mainPage_graphic/lotion.svg"
-import serum from "../../public/mainPage_graphic/serum.svg";
-import cream from "../../public/mainPage_graphic/cream.svg";
-import bubble from "../../public/mainPage_graphic/bubble.svg";
-import handwash from "../../public/mainPage_graphic/handwash.svg";
-import handcream from "../../public/mainPage_graphic/handcream.svg";
+import lotion from "../../public/landing_graphic/lotion.svg"
+import serum from "../../public/landing_graphic/serum.svg";
+import cream from "../../public/landing_graphic/cream.svg";
+import bubble from "../../public/landing_graphic/bubble.svg";
+import handwash from "../../public/landing_graphic/handwash.svg";
+import handcream from "../../public/landing_graphic/handcream.svg";
 import { IoArrowForwardSharp } from "react-icons/io5";
 import { ImQuotesLeft } from "react-icons/im";
 import { RiDiscountPercentLine } from "react-icons/ri";
 import { RiShoppingBagLine } from "react-icons/ri";
 import { PiEyesFill } from "react-icons/pi";
 import { IoIosCheckmarkCircle } from "react-icons/io";
-import placeholder from "../../public/mainPage_graphic/placeholder.png"
-
+import placeholder from "../../public/landing_graphic/placeholder.png"
 
 export default function MainPage() {
     return (
@@ -191,7 +190,7 @@ export default function MainPage() {
                         </div>
 
                         <div className="rounded-3xl bg-white p-4 shadow-lg">
-                            <img src={placeholder} alt="placeholder" />
+                            <img src={placeholder} alt="placeholder" loading="lazy"/>
                         </div>
                     </div>
                 </section>
