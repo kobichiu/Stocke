@@ -8,11 +8,11 @@ import handwash from "../../public/mainPage_graphic/handwash.svg";
 import handcream from "../../public/mainPage_graphic/handcream.svg";
 import { IoArrowForwardSharp } from "react-icons/io5";
 import { ImQuotesLeft } from "react-icons/im";
-// import { LuEyeClosed } from "react-icons/lu";
 import { RiDiscountPercentLine } from "react-icons/ri";
 import { RiShoppingBagLine } from "react-icons/ri";
 import { PiEyesFill } from "react-icons/pi";
 import { IoIosCheckmarkCircle } from "react-icons/io";
+import placeholder from "../../public/mainPage_graphic/placeholder.png"
 
 
 export default function MainPage() {
@@ -191,7 +191,7 @@ export default function MainPage() {
                         </div>
 
                         <div className="rounded-3xl bg-white p-4 shadow-lg">
-                            {/* Dashboard screenshot or styled static dashboard preview */}
+                            <img src={placeholder} alt="placeholder" />
                         </div>
                     </div>
                 </section>
