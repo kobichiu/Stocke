@@ -20,7 +20,7 @@ export default function MainPage() {
             <div className="min-h-screen">
                 <Navbar />
                 <section className="w-full mx-auto">
-                    <div className="relative bg-white h-[800px]">
+                    <div className="relative bg-white h-[800px] px-8 md:px-10">
                         <motion.img
                             src={lotion}
                             alt=""
@@ -121,7 +121,7 @@ export default function MainPage() {
                 </section>
 
                 <section className="w-full h-auto mx-auto">
-                    <div className="flex flex-col items-center justify-center gap-8 my-20 mx-auto">
+                    <div className="flex flex-col items-center justify-center gap-8 my-20 mx-auto px-8 md:px-10">
                         <h2 className="text-center max-w-4xl text-4xl md:text-5xl font-extrabold tracking-tight text-[#1a161e]">
                             Does it sound familiar to you?
                         </h2>
@@ -129,8 +129,8 @@ export default function MainPage() {
                         <h3 className="italic text-2xl md:text-4xl font-normal text-center">"Hmm... I still have some at home...but it's on sale!"</h3>
                         <h4 className="text-2xl font-light">And this is how the stockpile grows.</h4>
                     </div>
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-5 my-20 mx-auto">
-                        <div className="rounded-lg bg-white p-4 w-sm flex flex-col gap-6 shadow-md shadow-indigo-300/50">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-8 my-20 mx-auto px-8 md:px-10">
+                        <div className="rounded-lg bg-white p-4 size-72 flex flex-col gap-10 shadow-md shadow-indigo-300/50 m-2">
                             <div className="border border-transparent bg-purple-200 w-fit rounded-full">
                                 <PiEyesFill className="w-8 h-8 m-4 text-purple-900" />
                             </div>
@@ -138,7 +138,7 @@ export default function MainPage() {
                             <p className="text-lg font-light tracking-normal">Unused products tucked away in storage are easy to ignored</p>
                         </div>
 
-                        <div className="rounded-lg bg-white p-4 w-sm flex flex-col gap-6 shadow-md shadow-indigo-400/50">
+                        <div className="rounded-lg bg-white p-4 size-72 flex flex-col gap-10 shadow-md shadow-indigo-400/50">
                             <div className="border border-transparent bg-purple-200 w-fit rounded-full">
                                 <RiDiscountPercentLine className="w-8 h-8 m-4 text-purple-900" />
                             </div>
@@ -146,7 +146,7 @@ export default function MainPage() {
                             <p className="text-lg font-light tracking-normal">A good deal can trigger your FOMO so you may buy more</p>
                         </div>
 
-                        <div className="rounded-lg bg-white p-4 w-sm flex flex-col gap-6 shadow-md shadow-indigo-300/50">
+                        <div className="rounded-lg bg-white p-4 size-72 flex flex-col gap-10 shadow-md shadow-indigo-300/50">
                             <div className="border border-transparent bg-purple-200 w-fit rounded-full">
                                 <RiShoppingBagLine className="w-8 h-8 m-4 text-purple-900" />
                             </div>
@@ -156,7 +156,7 @@ export default function MainPage() {
                     </div>
                 </section>
                 <section className="px-6 py-24 mx-auto">
-                    <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
+                    <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2 px-8 md:px-10">
                         <div className="flex flex-col gap-8">
                             <p className="text-xl font-extralight uppercase tracking-tight text-[#6b5a83]">
                                 Meet Stócke
@@ -194,8 +194,8 @@ export default function MainPage() {
                         </div>
                     </div>
                 </section>
-                <section className="bg-white py-20 px-30 mx-auto">
-                    <div className="bg-gradient-to-t from-white to-purple-100 shadow-md shadow-violet-50 p-10 h-96 rounded-4xl text-center flex flex-col items-center justify-center gap-6">
+                <section className="bg-white py-20 mx-auto px-8 md:px-10 ">
+                    <div className="bg-gradient-to-t from-white to-purple-100 shadow-md shadow-violet-50 p-10 h-96 rounded-4xl text-center flex flex-col items-center justify-center gap-6 max-w-6xl mx-auto">
                             <h4 className="text-3xl md:text-4xl tracking-tight font-bold text-center text-gray-800">Make space for what matters</h4>
                             <span className="font-light italic">Start using Stócke to reclaim home storage and shop smarter.</span>
                             <button
